@@ -32,8 +32,10 @@ func (w *Worker) Start(ctx context.Context) ([]byte, error) {
 	defer w.mx.Unlock()
 	w.status = Running
 	defer w.SetTerminated()
+	log.Println("call: ", *command, (*args))
 	o, err := exec.CommandContext(ctx, *command, *args...).Output()
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	return o, nil
@@ -79,5 +81,5 @@ func main() {
 		w.Write([]byte(worker.Status()))
 		return
 	})
-	http.ListenAndServe(":8080", mux)
+	log.Fatal(http.ListenAndServe(":8080", mux))
 }
